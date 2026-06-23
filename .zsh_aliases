@@ -1,0 +1,4 @@
+# Custom alias for running the ixi-flower-tui Go application
+# Usage: Type 'a' anywhere to run the app from /home/ixi_flower/ixi-flower-tui
+
+alias a='cd /home/ixi_flower/ixi-flower-tui && go run .'

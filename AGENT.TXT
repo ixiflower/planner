@@ -1,0 +1,275 @@
+AGENT OPERATIONS POLICY (READ FIRST)
+- This file is the single source of truth for agent operations and project handover.
+- Do NOT delete, truncate, or rewrite history in this file.
+- Only the owner ixi_flower is allowed to remove or alter past log entries.
+- All other contributors/agents must ONLY APPEND new entries at the end under "Change Log" using the same format.
+- Append in chronological order with timestamp (UTC), author, scope, and a concise summary. Include impacted files and TODOs.
+- Updating the Project Index: If an AI agent discovers new, stable information about the system architecture, data flows, or conventions, it MAY update the "PROJECT INDEX" section to add or correct details. Do not remove existing subsections; add or refine entries with clear, minimal edits. Major structural changes should be proposed in the Change Log first and confirmed by ixi_flower.
+
+PROJECT INDEX (Overview for New Agents)
+Purpose
+- Planner app with backend (Django) and frontend (React+Vite+TypeScript). Key feature: a collaborative Structure Board page where users create boards made of nodes and edges, with modes (Mouse/Pen/Text) for editing and sketching.
+
+Structure
+- backend/ (Django project)
+  - ixiflowerv2ray: Django settings/urls/wsgi
+  - authentication: custom user model and auth endpoints
+  - tickets: tasks, submissions, team features, Telegram integration
+  - structure: boards API (CRUD, board data with nodes/edges)
+- frontend/ (React+Vite TypeScript)
+  - src/pages/structure.tsx: Structure Board page (migrating from React Flow to custom Canvas engine)
+  - components/ui: Shadcn UI primitives
+  - contexts/AuthContext.tsx: Authentication/token
+  - config/backend.ts: API base
+
+Data model (Structure Board)
+- Board: id (join code), name
+- Nodes: { id, type, position: {x,y}, width?, height?, data, style }
+  - data may include: label, heading, color, paths (freehand strokes relative to node)
+- Edges: { id, source, target, style?, animated? }
+
+Key flows
+- Frontend loads boards list, can create/join/switch boards
+- Active board auto-saves nodes/edges to backend via PUT /api/structure/boards/{id}/
+- Modes: Mouse (select/move), Pen (draw inside nodes), Text (create/edit text)
+
+Running locally
+- Backend: Django + requirements.txt; manage.py runserver (or docker-compose)
+- Frontend: vite dev (npm run dev) with proxy to backend
+
+Conventions
+- Keep backend API stable unless coordinated; prefer enriching node/edge payloads over breaking changes
+- Canvas engine resides in frontend/src/pages/structure.tsx in a component named BoardCanvas
+- Use TypeScript; keep logic modular inside BoardCanvas where possible
+- All AI agents must report what they are doing and keep AGENT.TXT updated continuously after each request
+
+Logging format
+- Add entries under "Change Log" like:
+  [YYYY-MM-DD HH:MM UTC] <author> - <scope> : <summary>
+  Files: <relative paths>
+  Notes/TODO: <bullets>
+
+AGENT LOG - Custom Canvas Structure Board
+
+Owner: Rovo Dev
+Start: 2026-01-26
+
+Goal
+- Replace React Flow usage on the Structure page with a custom Canvas-based implementation using TypeScript and functions only.
+- Preserve the existing UI layout and backend APIs as much as possible.
+- Support modes (Mouse, Pen, Text), board CRUD, saving/loading, node creation, node selection, node dragging, and drawing confined to nodes.
+
+Plan (Phased Delivery)
+Phase 1 (this commit):
+- Remove React Flow from the page rendering area and replace with a custom <BoardCanvas> that renders nodes on a single HTMLCanvasElement.
+- Keep the right sidebar, boards list, modes, and properties UI.
+- Support node creation via drag-and-drop from sidebar into canvas.
+- Support single node selection and dragging.
+- Support pen mode: draw only inside the node under the cursor; store paths per node; render them.
+- Preserve existing backend JSON format for nodes[] and edges[] to minimize server changes.
+- Skip node resizing and edge rendering for now. Hide edge property panel since edges aren’t interactable in Phase 1.
+
+Phase 2 (next):
+- Add node resize handles (custom), multi-select (shift or box-select), and panning/zooming.
+- Add edges (connecting, selecting, styling) on the canvas.
+- Add keyboard shortcuts (delete, copy/paste, undo/redo).
+
+Important Decisions
+- Rendering: HTML Canvas (better performance for freehand drawing and many elements).
+- Data model: keep nodes[]/edges[] shape largely the same (id, position {x,y}, type, data, style). This keeps API compatible.
+- Drag-and-drop: reusing existing sidebar drag setup (MIME: 'application/reactflow', label in 'application/reactflow-label').
+
+What’s Done Now
+- Introduced a custom BoardCanvas inside structure.tsx that:
+  - draws nodes as rounded rectangles filled with node color and heading/label text.
+  - clips freehand drawing to the node’s rectangle; freehand paths are stored in node.data.paths.
+  - supports selecting a node by clicking; dragging a node by mouse drag in Mouse mode.
+  - supports drawing inside a node when Pen mode is active; ignores drawing outside nodes.
+  - supports dropping new nodes into canvas.
+- Kept the Modes section with Mouse/Pen/Text buttons. Cursor switches to a pen cursor while in Pen mode over canvas.
+- Save/Load APIs preserved; nodes/edges arrays persisted as before.
+- Edge UI kept but effectively unused in Phase 1.
+
+Next Steps (Phase 2 TODO)
+- Implement resize handles per node.
+- Implement edges: connection points, line drawing, selection, styling.
+- Implement multi-select and marquee selection.
+- Implement pan/zoom and fit-to-view.
+- Add keyboard shortcuts and a better focus/selection model.
+
+Handover Notes
+- All work is currently in frontend/src/pages/structure.tsx.
+- Remove any remaining dead React Flow imports after Phase 2 when edges/selection are completed.
+- If server validation expects React Flow specific fields, review serializers to ensure saved shape still passes.
+
+Change Log
+[2026-02-01 03:15 UTC] Qwen - Team Page Mobile Responsiveness Fix : Improved mobile responsiveness by fixing layout issues and adjusting grid structures for better mobile viewing.
+Files: frontend/src/pages/team/index.tsx, AGENT.TXT
+
+[2026-02-01 03:00 UTC] Qwen - Team Page UI Fix : Fixed spacing issue between TM-lead section title and member cards.
+Files: frontend/src/pages/team/index.tsx, AGENT.TXT
+
+[2026-02-01 02:45 UTC] Qwen - Team Page UI/UX Enhancement : Enhanced the team page UI with improved user cards, task management modal, animations, and visual feedback.
+Files: frontend/src/pages/team/index.tsx, AGENT.TXT
+
+[2026-02-01 02:30 UTC] Qwen - Team Page Bug Fix : Fixed issue where existing tasks would disappear when adding new tasks by refreshing task list after each operation.
+Files: frontend/src/pages/team/index.tsx, AGENT.TXT
+
+[2026-02-01 02:15 UTC] Qwen - Team Page Bug Fix : Fixed issue where existing tasks would disappear when adding new tasks in the manage tasks popup.
+Files: frontend/src/pages/team/index.tsx, AGENT.TXT
+
+[2026-02-01 02:00 UTC] Qwen - Team Page Enhancement : Improved the team page with better design, layout, and responsiveness.
+Files: frontend/src/pages/calendar/Teams.tsx, AGENT.TXT
+
+[2026-02-01 01:45 UTC] Qwen - Auth Page Enhancement : Removed the current theme indicator from the profile management page.
+Files: frontend/src/auth/authpage.tsx, AGENT.TXT
+
+[2026-02-01 01:30 UTC] Qwen - Home Page Enhancement : Simplified the home page by removing central text and keeping only ASCII art and version number.
+Files: frontend/src/pages/home.tsx, AGENT.TXT
+
+[2026-02-01 01:15 UTC] Qwen - Profile Page Enhancement : Enhanced the profile management page with improved styling, spacing, and UI elements.
+Files: frontend/src/auth/authpage.tsx, AGENT.TXT
+
+[2026-02-01 01:00 UTC] Qwen - Auth Page Enhancement : Enhanced the auth page with improved spacing, font sizes, and descriptions.
+Files: frontend/src/auth/authpage.tsx, AGENT.TXT
+
+[2026-02-01 00:45 UTC] Qwen - Theme Update : Updated the theme in index.css with latest color scheme using OKLCH values.
+Files: frontend/src/index.css, AGENT.TXT
+
+[2026-02-01 00:30 UTC] Qwen - Theme Update : Updated the theme in index.css with new color scheme using OKLCH values.
+Files: frontend/src/index.css, AGENT.TXT
+
+[2026-02-01 00:15 UTC] Qwen - Theme Revert : Reverted the theme in index.css back to the original color scheme.
+Files: frontend/src/index.css, AGENT.TXT
+
+[2026-02-01 00:00 UTC] Qwen - Theme Update : Updated the theme in index.css with new color scheme using OKLCH values.
+Files: frontend/src/index.css, AGENT.TXT
+
+[2026-01-27 08:30 UTC] Rovo Dev - Group Interaction Fix : Prioritized selection of non-group nodes in hit tests so that items inside groups can be clicked. Increased default Group node size to 400x300.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Home Page ASCII Banner : Added ASCII art banner above the home page welcome heading.
+Files: frontend/src/pages/home.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Group Auto Tile On Drop : Auto-fit and vertically tile block nodes when dropped or dragged into group nodes.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Structure Sidebar Shortcut : Added M key binding to expand and lock open the right-side sidebar.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Structure Drag Release Fix : Ensured drag operations end on window mouseup to prevent stuck dragging after dropping into groups.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Structure Drag Release Fix (Board Canvas) : Added window mouseup handler inside the canvas component to avoid stuck dragging.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Group Vertical Tiling : Tiled group children vertically with equal-height slices like a tiling window manager.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Group Drag Freeze Fix : Applied group auto-layout using the latest node state on mouseup to prevent stuck dragging on second drop.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Group Tiling Spacing Tweaks : Added bottom padding and slightly increased tile widths inside groups.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Group Auto Expand : Expanded group height when more than two blocks are inside to preserve vertical tiling space.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Group Tile Width Reduction : Reduced the tiled block width inside groups.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Group Tile Width Tighten : Further tightened tiled block widths inside groups.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Group Size Defaults : Reduced default group size and lowered minimum tile height for blocks inside groups.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Group Default Color : Set the default group block color to #ff7800.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Structure Pan/Zoom UX : Enabled background drag panning (cursor tool) and prevented wheel zoom from scrolling the page.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-30 16:34 UTC] Rovo Dev - Default Block Height : Reduced default block height for all blocks.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 08:20 UTC] Rovo Dev - Group Property UI : Changed the label input text to 'Group Label' in the properties panel when a Group node is selected.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 08:15 UTC] Rovo Dev - Group Node Features : Implemented visual grouping with a header bar. Groups are rendered behind other nodes. Dragging a group now also drags all nodes fully contained within it.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 08:10 UTC] Rovo Dev - Add Group Node : Added 'Group' node type to the sidebar 'Add Nodes' section, using the Group icon from lucide-react.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 08:05 UTC] Rovo Dev - Structure Selected Node Fix : Restored selectedNode lookup to resolve sidebar crash when showing node properties.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 08:00 UTC] Rovo Dev - Structure Edge Selection Fix : Restored selectedEdge lookup to resolve sidebar crash when showing edge properties.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:55 UTC] Rovo Dev - Structure Join Board Fix : Restored missing handleJoinBoard handler to prevent runtime error on the Join Board button.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:50 UTC] Rovo Dev - Structure Fix : Restored onDrop, onDragStart, onDragOver, and screenToFlowPosition functions that were accidentally deleted, fixing the onDrop undefined error. screenToFlowPosition now correctly uses the view state.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:48 UTC] Rovo Dev - Fix Syntax Error : Corrected an unclosed penCursor string and restored the handleCopy callback definition in structure.tsx.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:45 UTC] Rovo Dev - Structure Fix : Restored state variables (tool, isSidebarOpen, etc.) that were accidentally removed during the copy/paste feature implementation, fixing the ReferenceError.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:40 UTC] Rovo Dev - Structure Copy/Paste : Implemented internal clipboard for nodes and edges. Added Ctrl+C/Ctrl+V keyboard shortcuts to duplicate selected nodes and their internal connections.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:35 UTC] Rovo Dev - Structure Layout Fix : Removed duplicated in-flow board header UI elements that were causing layout shifts and scrollbars when zooming. Now relying solely on absolute positioning for overlays.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:30 UTC] Rovo Dev - Structure Controls & Defaults : Added Zoom In/Out/Reset and Lock/Unlock controls to the bottom-left of the board. Implemented delete key shortcut for removing selected nodes/edges. Changed default node color to gray (#9ca3af).
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:25 UTC] Rovo Dev - Fix Panning & Overflow : Improved Space key detection for panning (using e.key) and added overflow-hidden to canvas container to prevent layout spill.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:22 UTC] Rovo Dev - Edge Interactions & Styling : Removed arrowheads from edges, implemented dashed line rendering for animated edges, enabled click-to-select for edges, and linked selection to sidebar properties.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:20 UTC] Rovo Dev - Structure Canvas Interactions : Updated panning to trigger on Space+Drag, and implemented marquee box selection on background drag. Added visual highlighting for selected nodes.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+Notes/TODO:
+- Text mode interaction is pending implementation.
+
+[2026-01-27 07:15 UTC] Rovo Dev - Structure Heading Styles : Implemented H1, H2, H3, and Normal font scaling in BoardCanvas render logic based on node data.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:12 UTC] Rovo Dev - Simplified Node Palette : Cleaned up 'Add Nodes' sidebar to only show a single 'Block Node' (renamed from Input Node) and removed Default/Output node options.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+
+[2026-01-27 07:10 UTC] Rovo Dev - Structure Properties Interaction : Fixed sidebar properties panel not opening on single node click by correctly populating selectedNodes.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+Notes/TODO:
+- Ensure multi-select behavior is consistent when implemented later.
+
+[2026-01-27 07:05 UTC] Rovo Dev - Structure Canvas Connections : Added drag-to-connect edges with arrowheads on nearest sides, centered labels, simplified resize handle, hover-side connection dots, and fixed drag/drop coordinate use.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+Notes/TODO:
+- Verify edge selection UX and hover dot sizing.
+
+[2026-01-27 06:48 UTC] Rovo Dev - Chat Enhancements & Agent Rule : Added chat features (general clear, bulk delete, edit with attachment replace, seen checks) and documented continuous AGENT.TXT updates requirement.
+Files: backend/tickets/views.py, backend/tickets/urls.py, frontend/src/components/chat/ChatBox.tsx, AGENT.TXT
+Notes/TODO:
+- Verify chat message seen flags are populated from backend.
+
+[2026-01-26 17:37 UTC] Rovo Dev - Phase 1 Canvas Migration : Replaced React Flow canvas with custom BoardCanvas (Canvas API), preserved UI and API, added pen drawing inside nodes, node drag, DnD node creation.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+Notes/TODO:
+- Phase 2: pan/zoom, resize, edges, text mode, selection, shortcuts.
+
+[2026-01-26 18:20 UTC] Rovo Dev - Phase 2 Start (Pan/Zoom, Resize) : Implemented zoom-to-pointer, panning, node resize handles; updated DnD to map coordinates; removed remaining React Flow UI from canvas area; added text cursor for Text mode.
+Files: frontend/src/pages/structure.tsx, AGENT.TXT
+Notes/TODO:
+- Implement edges (draw, connect, select) on canvas.
+- Implement Text mode (place/edit text in nodes or as text nodes).
+- Add selection highlight, multi-select, and box select.
+- Add fit-to-view and keyboard shortcuts.

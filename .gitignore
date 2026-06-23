@@ -1,0 +1,60 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+.npm-cache
+
+# Build output
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+.env
+backend/db.sqlite3
+
+# PID files
+run/*.pid
+
+# Vercel
+.vercel
+
+# Cache
+frontend/.npm-cache
+
+# Media uploads (user-generated)
+backend/media/
+backend/build/
+backend/*.exe
+backend/*.spec
+backend/admin.py
+backend/client.py
+backend/run/*.pid
+
+# Backup files
+*.backup
+*.bak
+*.corrupted

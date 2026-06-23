@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Photo Grid</title>
+    <style>
+      /* Navbar styles */
+      nav {
+        background-color: #333;
+        color: white;
+        padding: 12px;
+        text-align: center;
+      }
+ 
+      .logo {
+        height: 24px;
+      }
+ 
+      /* Container and grid styles */
+      .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+      }
+ 
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+ 
+      /* Photo card styles */
+      .photo-card {
+        height: 300px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+ 
+      .photo-card img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+      }
+ 
+      /* Photo details overlay */
+      .photo-details {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 12px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+ 
+      .photo-card:hover .photo-details {
+        opacity: 1;
+      }
+    </style>
+  </head>
+ 
+  <body>
+    <!-- Photo grid -->
+    <div class="container">
+      <div class="grid">
+        {% for photo in photos %}
+        <div class="photo-card">
+          <a href="{{ photo.url }}" target="_blank">
+            <img src="{{ photo.url }}" alt="{{ photo.title }}" />
+            <div class="photo-details">
+              <h4>{{ photo.title }}</h4>
+              <p>{{ photo.description }}</p>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>
+`` ### Add data to your Google sheet database - Add data to your Google sheet
+that you want to render into your database. Include a column called `title`,
+`description`, and `url` (with an url to an image) **Note: you must add at least
+2 rows of data for `get_all_records` to work**. This is because it needs a row
+column names, which will be the first row of your sheet. Here’s the data I added
+to my Google sheet. Add whatever data and images you’d like. (You can copy and
+paste this into your Google sheet; select it; and then click split into columns)
+```csv title,description,url Andya,A good
+friend,https://source.unsplash.com/90FYTPYDDWM Robatz,This was after our ball
+game last saturday,https://source.unsplash.com/6yU9MxrdWpA Berto,I took this
+last autumn in Greece. What a great day!,https://source.unsplash.com/y3kC_7Qhmjk
+Paweli,A close friend. We went and got popcorn
+afterwards,https://source.unsplash.com/HE7Bln39zDE Elaso,Spending time with a
+dear friend is always a treasure.,https://source.unsplash.com/K84vnnzxmTQ
+Mickin,Last Saturday, we had a fantastic time playing a game of ball
+together.,https://source.unsplash.com/F5_EDAt_BVo Ragif,Post-Saturday game
+excitement.,https://source.unsplash.com/XHpgMMiOvuM Aleyo,After a heavy workout
+together. #gains,https://source.unsplash.com/7GQHQwbuzfQ Brinky,My grandfather’s
+old work colleague,https://source.unsplash.com/FlJbi-4DuFc

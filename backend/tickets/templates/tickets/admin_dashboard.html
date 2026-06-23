@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    
+    <h2>All Tickets</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Subject</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket.user.username }}</td>
+                <td>{{ ticket.subject }}</td>
+                <td>{{ ticket.description }}</td>
+                <td>{{ ticket.status }}</td>
+                <td>{{ ticket.created_at }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No tickets found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <h2>Uploaded Config Files</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Uploaded By</th>
+                <th>Uploaded At</th>
+                <th>Download</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for config_file in config_files %}
+            <tr>
+                <td>{{ config_file.name }}</td>
+                <td>{{ config_file.uploaded_by.username }}</td>
+                <td>{{ config_file.uploaded_at }}</td>
+                <td><a href="{{ config_file.file.url }}" target="_blank">Download</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No files uploaded yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <h2>V2Ray Configurations</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Text</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for config in configs %}
+            <tr>
+                <td>{{ config.title }}</td>
+                <td>{{ config.text|truncatewords:10 }}</td>
+                <td>{{ config.status }}</td>
+                <td>{{ config.created_at }}</td>
+                <td>{{ config.updated_at }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No V2Ray configurations found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>

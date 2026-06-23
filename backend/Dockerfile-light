@@ -1,0 +1,36 @@
+FROM python:3.11-alpine
+
+# Set environment variables to reduce memory usage
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONMALLOC=malloc
+
+WORKDIR /app
+
+# Install minimal system dependencies
+RUN apk add --no-cache \
+    postgresql-client \
+    gcc \
+    musl-dev \
+    libffi-dev
+
+# Copy requirements and install Python dependencies with conservative memory usage
+COPY requirements-light.txt .
+RUN mv requirements-light.txt requirements.txt
+
+# Install only essential packages to reduce memory footprint
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create a non-root user
+RUN adduser -D planner-user
+USER planner-user
+
+EXPOSE 8000
+
+# Run with gunicorn for better memory management
+CMD ["python", "manage.py", "runserver", "165.22.115.250:8000"]

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug V2Ray Page</title>
+</head>
+<body>
+    <h1>Debug Information</h1>
+    
+    <h2>User Information:</h2>
+    <p>Username: {{ user.username }}</p>
+    <p>Is Authenticated: {{ user.is_authenticated }}</p>
+    <p>Is Staff: {{ user.is_staff }}</p>
+    
+    <h2>Profile Information:</h2>
+    <p>Has Profile: {{ user.profile|yesno:"Yes,No" }}</p>
+    {% if user.profile %}
+    <p>Has V2Ray Access: {{ user.profile.has_v2ray_access|yesno:"Yes,No" }}</p>
+    <p>Is V2Ray Admin: {{ user.profile.is_v2ray_admin|yesno:"Yes,No" }}</p>
+    {% else %}
+    <p>No profile found</p>
+    {% endif %}
+    
+    <h2>Context Variables:</h2>
+    <p>is_v2ray_admin: {{ is_v2ray_admin|yesno:"True,False" }}</p>
+    
+    <h2>Expected Tabs:</h2>
+    {% if is_v2ray_admin %}
+    <p>✓ Admin tab should be visible</p>
+    {% else %}
+    <p>✗ Admin tab should NOT be visible</p>
+    {% endif %}
+    
+    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+</body>
+</html>

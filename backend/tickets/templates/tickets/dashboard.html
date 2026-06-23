@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Dashboard</title>
+</head>
+<body>
+    <h1>User Dashboard</h1>
+    
+    {% if has_v2ray_access %}
+    <!-- Navigation to V2Ray Page -->
+    <p><a href="{% url 'v2ray_page' %}">Go to V2Ray Configurations</a></p>
+    {% endif %}
+    
+    <!-- Link to dedicated file upload page -->
+    <p><a href="{% url 'file_upload_page' %}">Upload files on dedicated page</a></p>
+    
+    <!-- File Upload Form -->
+    <h2>Upload .txt File</h2>
+    <form method="post" action="{% url 'upload_file' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" accept=".txt">
+        <button type="submit">Upload File</button>
+    </form>
+    
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    
+    <!-- Existing Tickets Section -->
+    <h2>Your Tickets</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket.subject }}</td>
+                <td>{{ ticket.description }}</td>
+                <td>{{ ticket.status }}</td>
+                <td>{{ ticket.created_at }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No tickets found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>
