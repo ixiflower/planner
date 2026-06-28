@@ -4,6 +4,8 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { serve } from "@hono/node-server";
 import { authRouter } from "./routes/auth.js";
+import { oauthRouter } from "./routes/oauth.js";
+import { uploadRouter } from "./routes/upload.js";
 import { tasksRouter } from "./routes/tasks.js";
 import { usersRouter } from "./routes/users.js";
 
@@ -21,6 +23,8 @@ app.get("/api/health", (c) => c.json({ status: "ok", service: "planner-neon" }))
 
 // Routes
 app.route("/api/auth", authRouter);
+app.route("/api/auth", oauthRouter);
+app.route("/api/auth", uploadRouter);
 app.route("/api/tasks", tasksRouter);
 app.route("/api/users", usersRouter);
 
