@@ -49,7 +49,7 @@ export default function WorkingHours({ token }: WorkingHoursProps) {
         authToken = `Token ${authToken}`;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/working-hours/`, {
+      const response = await fetch(`${API_BASE_URL}/api/working-hours`, {
         method: "GET",
         headers: {
           Authorization: authToken,
@@ -88,7 +88,7 @@ export default function WorkingHours({ token }: WorkingHoursProps) {
         authToken = `Token ${authToken}`;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/working-hours/check-in/`, {
+      const response = await fetch(`${API_BASE_URL}/api/working-hours/check-in`, {
         method: "POST",
         headers: {
           Authorization: authToken,
@@ -123,7 +123,7 @@ export default function WorkingHours({ token }: WorkingHoursProps) {
         authToken = `Token ${authToken}`;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/working-hours/check-out/`, {
+      const response = await fetch(`${API_BASE_URL}/api/working-hours/check-out`, {
         method: "POST",
         headers: {
           Authorization: authToken,

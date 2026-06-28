@@ -416,30 +416,30 @@ const Calendar: React.FC = () => {
       if (authHeader.trim()) headers["Authorization"] = authHeader.trim();
 
       try {
-        const bulkTasks = await fetch(`${apiBase}/tasks/clear/`, { method: "POST", headers, credentials: "include" });
+        const bulkTasks = await fetch(`${apiBase}/tasks/clear`, { method: "POST", headers, credentials: "include" });
         if (!bulkTasks.ok) {
-          await Promise.allSettled(events.map(ev => fetch(`${apiBase}/tasks/${ev.id}/`, { method: "DELETE", headers, credentials: "include" })));
+          await Promise.allSettled(events.map(ev => fetch(`${apiBase}/tasks/${ev.id}`, { method: "DELETE", headers, credentials: "include" })));
         }
       } catch {}
 
       try {
-        const bulkNotes = await fetch(`${apiBase}/notes/clear/`, { method: "POST", headers, credentials: "include" });
+        const bulkNotes = await fetch(`${apiBase}/notes/clear`, { method: "POST", headers, credentials: "include" });
         if (!bulkNotes.ok) {
-          await Promise.allSettled(permanentNotes.map(n => fetch(`${apiBase}/notes/${n.id}/`, { method: "DELETE", headers, credentials: "include" })));
+          await Promise.allSettled(permanentNotes.map(n => fetch(`${apiBase}/notes/${n.id}`, { method: "DELETE", headers, credentials: "include" })));
         }
       } catch {}
 
       try {
-        const bulkGoals = await fetch(`${apiBase}/daily-goals/clear/`, { method: "POST", headers, credentials: "include" });
+        const bulkGoals = await fetch(`${apiBase}/daily-goals/clear`, { method: "POST", headers, credentials: "include" });
         if (!bulkGoals.ok) {
-          await Promise.allSettled(dailyGoals.map(g => fetch(`${apiBase}/daily-goals/${g.id}/`, { method: "DELETE", headers, credentials: "include" })));
+          await Promise.allSettled(dailyGoals.map(g => fetch(`${apiBase}/daily-goals/${g.id}`, { method: "DELETE", headers, credentials: "include" })));
         }
       } catch {}
 
       try {
-        const bulkTemplates = await fetch(`${apiBase}/event-templates/clear/`, { method: "POST", headers, credentials: "include" });
+        const bulkTemplates = await fetch(`${apiBase}/event-templates/clear`, { method: "POST", headers, credentials: "include" });
         if (!bulkTemplates.ok) {
-          await Promise.allSettled(templates.map(t => fetch(`${apiBase}/event-templates/${t.id}/`, { method: "DELETE", headers, credentials: "include" })));
+          await Promise.allSettled(templates.map(t => fetch(`${apiBase}/event-templates/${t.id}`, { method: "DELETE", headers, credentials: "include" })));
         }
       } catch {}
 

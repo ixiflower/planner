@@ -117,7 +117,7 @@ const Settings: React.FC = () => {
     const formData = new FormData();
     formData.append("username", username);
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/update-profile/`, {
+      const response = await fetch(`${API_BASE_URL}/auth/update-profile`, {
         method: "POST",
         headers: {
           Authorization: token || ""
@@ -145,7 +145,7 @@ const Settings: React.FC = () => {
     const formData = new FormData();
     formData.append("profile_picture", profilePicture);
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/update-profile/`, {
+      const response = await fetch(`${API_BASE_URL}/auth/update-profile`, {
         method: "POST",
         headers: {
           Authorization: token || ""
@@ -184,7 +184,7 @@ const Settings: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/update-profile/`, {
+      const response = await fetch(`${API_BASE_URL}/auth/update-profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

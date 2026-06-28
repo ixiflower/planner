@@ -5,7 +5,7 @@ import { db } from "../../db/index.js";
 import { eventTemplates } from "../../db/schema/index.js";
 import { authMiddleware } from "../../middleware/auth.js";
 
-export const eventTemplatesRouter = new Hono();
+export const eventTemplatesRouter = new Hono({ strict: false });
 eventTemplatesRouter.use("*", authMiddleware);
 
 // GET /event-templates

@@ -8,7 +8,7 @@ import { authMiddleware } from "../middleware/auth.js";
 
 // Cloudinary auto-configures from CLOUDINARY_URL env var
 
-export const uploadRouter = new Hono();
+export const uploadRouter = new Hono({ strict: false });
 
 // All routes require auth
 uploadRouter.use("*", authMiddleware);

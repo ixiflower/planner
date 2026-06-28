@@ -5,7 +5,7 @@ import { db } from "../../db/index.js";
 import { calendarEvents } from "../../db/schema/index.js";
 import { authMiddleware } from "../../middleware/auth.js";
 
-export const calendarEventsRouter = new Hono();
+export const calendarEventsRouter = new Hono({ strict: false });
 calendarEventsRouter.use("*", authMiddleware);
 
 // GET /tasks - list all events for current user

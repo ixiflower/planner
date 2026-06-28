@@ -283,7 +283,7 @@ export default function AuthPage() {
     if (!token) return;
     setLoadingServices(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/api/structure/services/`, {
+      const response = await fetch(`${BACKEND_URL}/api/structure/services`, {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
@@ -309,7 +309,7 @@ export default function AuthPage() {
   const addService = async () => {
     if (!newServiceName.trim() || !newServiceUrl.trim() || !token) return;
     try {
-      const response = await fetch(`${BACKEND_URL}/api/structure/services/`, {
+      const response = await fetch(`${BACKEND_URL}/api/structure/services`, {
         method: 'POST',
         headers: {
           'Authorization': token,
@@ -336,7 +336,7 @@ export default function AuthPage() {
   const removeService = async (id: string) => {
     if (!token) return;
     try {
-      const response = await fetch(`${BACKEND_URL}/api/structure/services/${id}/`, {
+      const response = await fetch(`${BACKEND_URL}/api/structure/services/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': token,
@@ -365,7 +365,7 @@ export default function AuthPage() {
   const updateService = async () => {
     if (!editServiceName.trim() || !editServiceUrl.trim() || !editingService || !token) return;
     try {
-      const response = await fetch(`${BACKEND_URL}/api/structure/services/${editingService}/`, {
+      const response = await fetch(`${BACKEND_URL}/api/structure/services/${editingService}`, {
         method: 'PATCH',
         headers: {
           'Authorization': token,
@@ -433,7 +433,7 @@ export default function AuthPage() {
     if (!token || !user) return;
     setLoadingGroups(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/api/structure/groups/`, {
+      const response = await fetch(`${BACKEND_URL}/api/structure/groups`, {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
@@ -459,7 +459,7 @@ export default function AuthPage() {
   const approveGroup = async (id: number) => {
     if (!token) return;
     try {
-      const response = await fetch(`${BACKEND_URL}/api/structure/groups/${id}/approve/`, {
+      const response = await fetch(`${BACKEND_URL}/api/structure/groups/${id}/approve`, {
         method: 'POST',
         headers: { 'Authorization': token }
       });
@@ -474,7 +474,7 @@ export default function AuthPage() {
   const rejectGroup = async (id: number) => {
     if (!token) return;
     try {
-      const response = await fetch(`${BACKEND_URL}/api/structure/groups/${id}/reject/`, {
+      const response = await fetch(`${BACKEND_URL}/api/structure/groups/${id}/reject`, {
         method: 'POST',
         headers: { 'Authorization': token }
       });
@@ -489,7 +489,7 @@ export default function AuthPage() {
   const leaveGroup = async (id: number) => {
     if (!token) return;
     try {
-      const response = await fetch(`${BACKEND_URL}/api/structure/groups/${id}/leave/`, {
+      const response = await fetch(`${BACKEND_URL}/api/structure/groups/${id}/leave`, {
         method: 'POST',
         headers: { 'Authorization': token }
       });
@@ -513,7 +513,7 @@ export default function AuthPage() {
     if (!token || !groupToDelete) return;
     setIsDeletingGroup(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/api/structure/groups/${groupToDelete.id}/`, {
+      const response = await fetch(`${BACKEND_URL}/api/structure/groups/${groupToDelete.id}`, {
         method: 'DELETE',
         headers: { 'Authorization': token }
       });
@@ -539,7 +539,7 @@ export default function AuthPage() {
       let authToken = localStorage.getItem("authToken") || token || "";
       if (authToken && !authToken.startsWith("Bearer ")) authToken = `Bearer ${authToken}`;
       
-      const response = await fetch(`${BACKEND_URL}/api/team/`, {
+      const response = await fetch(`${BACKEND_URL}/api/team`, {
         headers: {
           Authorization: authToken,
           "Content-Type": "application/json"
@@ -576,7 +576,7 @@ export default function AuthPage() {
       let authToken = localStorage.getItem("authToken") || token || "";
       if (authToken && !authToken.startsWith("Bearer ")) authToken = `Bearer ${authToken}`;
       
-      const response = await fetch(`${BACKEND_URL}/api/users/delete/${userToDelete.id}/`, {
+      const response = await fetch(`${BACKEND_URL}/api/users/delete/${userToDelete.id}`, {
         method: "DELETE",
         headers: {
           Authorization: authToken,
@@ -869,7 +869,7 @@ export default function AuthPage() {
     try {
       let authToken = localStorage.getItem("authToken") || token || '';
       if (authToken && !authToken.startsWith('Bearer ')) authToken = `Bearer ${authToken}`;
-      const res = await fetch(`${BACKEND_URL}/api/auth/update-profile/`, {
+      const res = await fetch(`${BACKEND_URL}/api/auth/update-profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -907,7 +907,7 @@ export default function AuthPage() {
     try {
       let authToken = localStorage.getItem("authToken") || token || '';
       if (authToken && !authToken.startsWith('Bearer ')) authToken = `Bearer ${authToken}`;
-      const res = await fetch(`${BACKEND_URL}/api/auth/update-profile/`, {
+      const res = await fetch(`${BACKEND_URL}/api/auth/update-profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -949,7 +949,7 @@ export default function AuthPage() {
       if (authToken && !authToken.startsWith('Bearer ')) authToken = `Bearer ${authToken}`;
       const form = new FormData();
       form.append("profile_picture", avatarFile);
-      const res = await fetch(`${BACKEND_URL}/api/auth/update-profile/`, {
+      const res = await fetch(`${BACKEND_URL}/api/auth/update-profile`, {
         method: "POST",
         headers: {
           "Authorization": authToken,
@@ -983,7 +983,7 @@ export default function AuthPage() {
     try {
       let authToken = localStorage.getItem("authToken") || token || '';
       if (authToken && !authToken.startsWith('Bearer ')) authToken = `Bearer ${authToken}`;
-      const res = await fetch(`${BACKEND_URL}/api/auth/update-profile/`, {
+      const res = await fetch(`${BACKEND_URL}/api/auth/update-profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1011,7 +1011,7 @@ export default function AuthPage() {
     try {
       let authToken = localStorage.getItem("authToken") || token || '';
       if (authToken && !authToken.startsWith('Bearer ')) authToken = `Bearer ${authToken}`;
-      const res = await fetch(`${BACKEND_URL}/api/auth/update-profile/`, {
+      const res = await fetch(`${BACKEND_URL}/api/auth/update-profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1068,7 +1068,7 @@ export default function AuthPage() {
     try {
       let authToken = localStorage.getItem("authToken") || token || '';
       if (authToken && !authToken.startsWith('Bearer ')) authToken = `Bearer ${authToken}`;
-      const res = await fetch(`${BACKEND_URL}/api/auth/assign-role/`, {
+      const res = await fetch(`${BACKEND_URL}/api/auth/assign-role`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1120,7 +1120,7 @@ export default function AuthPage() {
     try {
       let authToken = localStorage.getItem("authToken") || token || "";
       if (authToken && !authToken.startsWith("Bearer ")) authToken = `Bearer ${authToken}`;
-      const res = await fetch(`${API_BASE_URL}/submissions/`, {
+      const res = await fetch(`${API_BASE_URL}/submissions`, {
         method: "GET",
         headers: {
           Authorization: authToken,
@@ -1166,7 +1166,7 @@ export default function AuthPage() {
     try {
       let authToken = localStorage.getItem("authToken") || token || "";
       if (authToken && !authToken.startsWith("Bearer ")) authToken = `Bearer ${authToken}`;
-      const response = await fetch(`${BACKEND_URL}/api/telegram/`, {
+      const response = await fetch(`${BACKEND_URL}/api/telegram`, {
         method: "GET",
         headers: {
           "Authorization": authToken,
@@ -1214,7 +1214,7 @@ export default function AuthPage() {
     try {
       let authToken = localStorage.getItem("authToken") || token || "";
       if (authToken && !authToken.startsWith("Bearer ")) authToken = `Bearer ${authToken}`;
-      const response = await fetch(`${BACKEND_URL}/api/telegram/update/`, {
+      const response = await fetch(`${BACKEND_URL}/api/telegram/update`, {
         method: "POST",
         headers: {
           "Authorization": authToken,
@@ -1242,7 +1242,7 @@ export default function AuthPage() {
     try {
       let authToken = localStorage.getItem("authToken") || token || "";
       if (authToken && !authToken.startsWith("Bearer ")) authToken = `Bearer ${authToken}`;
-      const response = await fetch(`${BACKEND_URL}/api/database/export/`, {
+      const response = await fetch(`${BACKEND_URL}/api/database/export`, {
         method: "GET",
         headers: {
           Authorization: authToken,
@@ -1281,7 +1281,7 @@ export default function AuthPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(`${BACKEND_URL}/api/database/import/`, {
+      const response = await fetch(`${BACKEND_URL}/api/database/import`, {
         method: "POST",
         headers: {
           Authorization: authToken,
@@ -1401,7 +1401,7 @@ export default function AuthPage() {
       let authToken = localStorage.getItem("authToken") || token || "";
       if (authToken && !authToken.startsWith("Bearer ")) authToken = `Bearer ${authToken}`;
 
-      const response = await fetch(`${BACKEND_URL}/api/sae-data/sync/`, {
+      const response = await fetch(`${BACKEND_URL}/api/sae-data/sync`, {
         method: "POST",
         headers: {
           Authorization: authToken,
@@ -1433,7 +1433,7 @@ export default function AuthPage() {
       let authToken = localStorage.getItem("authToken") || token || "";
       if (authToken && !authToken.startsWith("Bearer ")) authToken = `Bearer ${authToken}`;
 
-      const response = await fetch(`${BACKEND_URL}/api/telegram/update/`, {
+      const response = await fetch(`${BACKEND_URL}/api/telegram/update`, {
         method: "POST",
         headers: {
           Authorization: authToken,
@@ -1459,7 +1459,7 @@ export default function AuthPage() {
       let authToken = localStorage.getItem("authToken") || token || "";
       if (authToken && !authToken.startsWith("Bearer ")) authToken = `Bearer ${authToken}`;
 
-      const response = await fetch(`${BACKEND_URL}/api/telegram/update/`, {
+      const response = await fetch(`${BACKEND_URL}/api/telegram/update`, {
         method: "POST",
         headers: {
           Authorization: authToken,
@@ -2141,7 +2141,7 @@ export default function AuthPage() {
                               if (!groupName.trim() || !token) return;
                               setIsCreatingGroup(true);
                               try {
-                                const response = await fetch(`${BACKEND_URL}/api/structure/groups/`, {
+                                const response = await fetch(`${BACKEND_URL}/api/structure/groups`, {
                                   method: 'POST',
                                   headers: {
                                     'Authorization': token,
@@ -2190,7 +2190,7 @@ export default function AuthPage() {
                               if (!joinCode.trim() || !token) return;
                               setIsJoiningGroup(true);
                               try {
-                                const response = await fetch(`${BACKEND_URL}/api/structure/groups/join/`, {
+                                const response = await fetch(`${BACKEND_URL}/api/structure/groups/join`, {
                                   method: 'POST',
                                   headers: {
                                     'Authorization': token,

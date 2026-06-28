@@ -5,7 +5,7 @@ import { db } from "../../db/index.js";
 import { exercises } from "../../db/schema/index.js";
 import { authMiddleware } from "../../middleware/auth.js";
 
-export const exerciseRouter = new Hono();
+export const exerciseRouter = new Hono({ strict: false });
 exerciseRouter.use("*", authMiddleware);
 
 // GET /exercise - get user's exercise

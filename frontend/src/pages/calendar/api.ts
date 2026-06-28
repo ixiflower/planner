@@ -52,7 +52,7 @@ export const fetchTasks = async (token?: string): Promise<CalendarEvent[]> => {
   try {
     const headers = buildHeaders(token);
 
-    const response = await fetch(`${API_URL}/tasks/`, {
+    const response = await fetch(`${API_URL}/tasks`, {
       method: "GET",
       headers,
       credentials: "include",
@@ -103,8 +103,8 @@ export const createTask = async (task: Omit<CalendarEvent, "id">, token?: string
     } catch (e) {
       console.debug('createTask - error reading token for debug:', e);
     }
-    console.debug('createTask - headers to send:', headers, 'API URL:', `${API_URL}/tasks/`);
-    const response = await fetch(`${API_URL}/tasks/`, {
+    console.debug('createTask - headers to send:', headers, 'API URL:', `${API_URL}/tasks`);
+    const response = await fetch(`${API_URL}/tasks`, {
       method: "POST",
       headers,
       credentials: "include",
@@ -147,7 +147,7 @@ export const updateTask = async (task: CalendarEvent, token?: string): Promise<C
     };
 
     const headers = buildHeaders(token);
-    const response = await fetch(`${API_URL}/tasks/${task.id}/`, {
+    const response = await fetch(`${API_URL}/tasks/${task.id}`, {
       method: "PUT",
       headers,
       credentials: "include",
@@ -168,7 +168,7 @@ export const updateTask = async (task: CalendarEvent, token?: string): Promise<C
 export const deleteTask = async (taskId: string, token?: string): Promise<boolean> => {
   try {
     const headers = buildHeaders(token);
-    const response = await fetch(`${API_URL}/tasks/${taskId}/`, {
+    const response = await fetch(`${API_URL}/tasks/${taskId}`, {
       method: "DELETE",
       headers,
       credentials: "include",
@@ -184,7 +184,7 @@ export const deleteTask = async (taskId: string, token?: string): Promise<boolea
 export const fetchAllEvents = async (token?: string): Promise<CalendarEvent[]> => {
   try {
     const headers = buildHeaders(token);
-    const response = await fetch(`${API_URL}/tasks/`, {
+    const response = await fetch(`${API_URL}/tasks`, {
       method: "GET",
       headers,
       credentials: "include",
@@ -213,7 +213,7 @@ export const fetchAllEvents = async (token?: string): Promise<CalendarEvent[]> =
 
 export const fetchPermanentNotes = async (token?: string): Promise<PermanentNote[]> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/notes/`, { headers, credentials: "include" });
+  const response = await fetch(`${API_URL}/notes`, { headers, credentials: "include" });
   if (!response.ok) throw new Error("Failed to fetch notes");
   const data = await response.json();
   return data.notes || [];
@@ -221,7 +221,7 @@ export const fetchPermanentNotes = async (token?: string): Promise<PermanentNote
 
 export const createPermanentNote = async (note: Omit<PermanentNote, "id" | "created_at" | "updated_at">, token?: string): Promise<PermanentNote> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/notes/`, {
+  const response = await fetch(`${API_URL}/notes`, {
     method: "POST",
     headers,
     credentials: "include",
@@ -233,7 +233,7 @@ export const createPermanentNote = async (note: Omit<PermanentNote, "id" | "crea
 
 export const updatePermanentNote = async (note: PermanentNote, token?: string): Promise<PermanentNote> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/notes/${note.id}/`, {
+  const response = await fetch(`${API_URL}/notes/${note.id}`, {
     method: "PUT",
     headers,
     credentials: "include",
@@ -245,7 +245,7 @@ export const updatePermanentNote = async (note: PermanentNote, token?: string): 
 
 export const deletePermanentNote = async (noteId: number, token?: string): Promise<boolean> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/notes/${noteId}/`, {
+  const response = await fetch(`${API_URL}/notes/${noteId}`, {
     method: "DELETE",
     headers,
     credentials: "include",
@@ -256,7 +256,7 @@ export const deletePermanentNote = async (noteId: number, token?: string): Promi
 export const fetchDailyGoals = async (token?: string): Promise<DailyGoal[]> => {
   try {
     const headers = buildHeaders(token);
-    const response = await fetch(`${API_URL}/daily-goals/`, { headers, credentials: "include" });
+    const response = await fetch(`${API_URL}/daily-goals`, { headers, credentials: "include" });
     if (!response.ok) {
       console.warn("Failed to fetch daily goals:", response.status);
       return []; // Return empty array instead of throwing
@@ -276,8 +276,8 @@ export const createDailyGoal = async (goal: Omit<DailyGoal, "id">, token?: strin
   } catch (e) {
     console.debug('createDailyGoal - error reading token for debug:', e);
   }
-  console.debug('createDailyGoal - headers to send:', headers, 'API URL:', `${API_URL}/daily-goals/`);
-  const response = await fetch(`${API_URL}/daily-goals/`, {
+  console.debug('createDailyGoal - headers to send:', headers, 'API URL:', `${API_URL}/daily-goals`);
+  const response = await fetch(`${API_URL}/daily-goals`, {
     method: "POST",
     headers,
     credentials: "include",
@@ -295,7 +295,7 @@ export const createDailyGoal = async (goal: Omit<DailyGoal, "id">, token?: strin
 
 export const updateDailyGoal = async (goal: DailyGoal, token?: string): Promise<DailyGoal> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/daily-goals/${goal.id}/`, {
+  const response = await fetch(`${API_URL}/daily-goals/${goal.id}`, {
     method: "PUT",
     headers,
     credentials: "include",
@@ -307,7 +307,7 @@ export const updateDailyGoal = async (goal: DailyGoal, token?: string): Promise<
 
 export const deleteDailyGoal = async (goalId: number, token?: string): Promise<boolean> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/daily-goals/${goalId}/`, {
+  const response = await fetch(`${API_URL}/daily-goals/${goalId}`, {
     method: "DELETE",
     headers,
     credentials: "include",
@@ -317,14 +317,14 @@ export const deleteDailyGoal = async (goalId: number, token?: string): Promise<b
 
 export const fetchEventTemplates = async (token?: string): Promise<EventTemplate[]> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/event-templates/`, { headers, credentials: "include" });
+  const response = await fetch(`${API_URL}/event-templates`, { headers, credentials: "include" });
   if (!response.ok) throw new Error("Failed to fetch event templates");
   return response.json();
 };
 
 export const createEventTemplate = async (template: Omit<EventTemplate, "id">, token?: string): Promise<EventTemplate> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/event-templates/`, {
+  const response = await fetch(`${API_URL}/event-templates`, {
     method: "POST",
     headers,
     credentials: "include",
@@ -336,7 +336,7 @@ export const createEventTemplate = async (template: Omit<EventTemplate, "id">, t
 
 export const updateEventTemplate = async (template: EventTemplate, token?: string): Promise<EventTemplate> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/event-templates/${template.id}/`, {
+  const response = await fetch(`${API_URL}/event-templates/${template.id}`, {
     method: "PUT",
     headers,
     credentials: "include",
@@ -348,7 +348,7 @@ export const updateEventTemplate = async (template: EventTemplate, token?: strin
 
 export const deleteEventTemplate = async (templateId: number, token?: string): Promise<boolean> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/event-templates/${templateId}/`, {
+  const response = await fetch(`${API_URL}/event-templates/${templateId}`, {
     method: "DELETE",
     headers,
     credentials: "include",
@@ -365,7 +365,7 @@ export interface Exercise {
 
 export const fetchExercise = async (token?: string): Promise<Exercise | null> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/exercise/`, { 
+  const response = await fetch(`${API_URL}/exercise`, { 
     headers, 
     credentials: "include" 
   });
@@ -392,7 +392,7 @@ export const fetchExercise = async (token?: string): Promise<Exercise | null> =>
 
 export const saveExercise = async (exercise: Exercise, token?: string): Promise<Exercise> => {
   const headers = buildHeaders(token);
-  const response = await fetch(`${API_URL}/exercise/`, {
+  const response = await fetch(`${API_URL}/exercise`, {
     method: "POST",
     headers,
     credentials: "include",

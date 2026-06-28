@@ -5,7 +5,7 @@ import { db } from "../../db/index.js";
 import { dailyGoals } from "../../db/schema/index.js";
 import { authMiddleware } from "../../middleware/auth.js";
 
-export const dailyGoalsRouter = new Hono();
+export const dailyGoalsRouter = new Hono({ strict: false });
 dailyGoalsRouter.use("*", authMiddleware);
 
 // GET /daily-goals

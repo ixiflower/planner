@@ -26,6 +26,16 @@ app.use("*", cors({
 app.get("/api/health", (c) => c.json({ status: "ok", service: "planner-neon" }));
 
 // Routes
+
+// Trailing-slash redirect: preserve method+body (308) so POST works
+app.use("*", async (c, next) => {
+  const path = c.req.path;
+  if (path !== "/" && path.endsWith("/")) {
+    return c.redirect(path.slice(0, -1), 308);
+  }
+  await next();
+});
+
 app.route("/api/auth", authRouter);
 app.route("/api/auth", oauthRouter);
 app.route("/api/auth", uploadRouter);

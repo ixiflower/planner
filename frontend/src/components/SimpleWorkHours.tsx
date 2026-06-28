@@ -342,7 +342,7 @@ export default function SimpleWorkHours() {
       const autoPassword = "password123"; // Default password
       
       // Register new user via backend
-      const response = await fetch(`${API_BASE_URL}/auth/register/`, {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

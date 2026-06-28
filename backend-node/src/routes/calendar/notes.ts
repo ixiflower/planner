@@ -5,7 +5,7 @@ import { db } from "../../db/index.js";
 import { permanentNotes } from "../../db/schema/index.js";
 import { authMiddleware } from "../../middleware/auth.js";
 
-export const notesRouter = new Hono();
+export const notesRouter = new Hono({ strict: false });
 notesRouter.use("*", authMiddleware);
 
 // GET /notes - list notes
