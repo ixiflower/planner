@@ -1,17 +1,24 @@
 import "dotenv/config";
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: process.env.SMTP_SECURE === "true",
-  auth: {
-    user: process.env.SMTP_USER || "",
-    pass: process.env.SMTP_PASS || "",
-  },
-});
+function createTransporter() {
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  if (!user || !pass) return null;
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    port: parseInt(process.env.SMTP_PORT || "587"),
+    secure: process.env.SMTP_SECURE === "true",
+    auth: { user, pass },
+  });
+}
 
 export async function sendOtpEmail(to: string, otp: string): Promise<void> {
+  const transporter = createTransporter();
+  if (!transporter) {
+    console.log(`[EMAIL] OTP for ${to}: ${otp}`);
+    return;
+  }
   const fromName = process.env.SMTP_FROM_NAME || "Planner App";
   const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER || "noreply@planner.app";
 
