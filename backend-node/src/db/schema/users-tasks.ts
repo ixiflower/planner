@@ -29,6 +29,9 @@ export const users = pgTable("users", {
   isSuperuser: boolean("is_superuser").default(false),
   isActive: boolean("is_active").default(true),
   dateJoined: timestamp("date_joined").defaultNow(),
+  emailVerified: boolean("email_verified").default(false),
+  emailOtp: varchar("email_otp", { length: 256 }),
+  emailOtpExpires: timestamp("email_otp_expires"),
 });
 
 // ─── Calendar Events (Tasks) ───

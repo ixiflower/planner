@@ -3,10 +3,11 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import bcrypt from "bcryptjs";
-import { eq, or } from "drizzle-orm";
+import { eq, or, lt } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { users } from "../db/schema/index.js";
 import { generateToken, authMiddleware } from "../middleware/auth.js";
+import { sendOtpEmail, generateOtp } from "../utils/email.js";
 
 export const authRouter = new Hono();
 
@@ -36,6 +37,30 @@ authRouter.post("/login", zValidator("json", loginSchema), async (c) => {
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
     return c.json({ error: "Invalid credentials" }, 401);
+  }
+
+  // Check email verification
+  if (!user.emailVerified) {
+    // Generate a new OTP and send it
+    const otp = generateOtp();
+    const hashed = await bcrypt.hash(otp, 10);
+    const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await db
+      .update(users)
+      .set({ emailOtp: hashed, emailOtpExpires: expires })
+      .where(eq(users.id, user.id));
+
+    // Try to send OTP (fire-and-forget)
+    sendOtpEmail(user.email, otp).catch((err) =>
+      console.error("Failed to send OTP:", err)
+    );
+
+    return c.json({
+      error: "Email not verified",
+      needsVerification: true,
+      email: user.email,
+    }, 403);
   }
 
   const token = await generateToken(user);
@@ -98,24 +123,142 @@ authRouter.post("/register", zValidator("json", registerSchema), async (c) => {
       lastName: rest.join(" ") || "",
       isActive: true,
       teamRole: "None",
+      emailVerified: false,
     })
     .returning();
 
-  const token = await generateToken(newUser);
+  // Generate and send OTP
+  const otp = generateOtp();
+  const otpHash = await bcrypt.hash(otp, 10);
+  const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+  await db
+    .update(users)
+    .set({ emailOtp: otpHash, emailOtpExpires: expires })
+    .where(eq(users.id, newUser.id));
+
+  // Send OTP email (fire-and-forget -- don't block registration)
+  sendOtpEmail(email, otp).catch((err) => {
+    console.error("Failed to send OTP email:", err.message);
+    // Log OTP to console when SMTP is not configured (dev mode)
+    if (!process.env.SMTP_USER) {
+      console.log(`[DEV] OTP for ${email}: ${otp}`);
+    }
+  });
 
   return c.json({
     success: true,
+    message: "Verification code sent to your email",
+    needsVerification: true,
+    email,
+  });
+});
+
+// ─── Verify Email (OTP) ───
+const verifySchema = z.object({
+  email: z.string().email(),
+  otp: z.string().length(6),
+});
+
+authRouter.post("/verify-email", zValidator("json", verifySchema), async (c) => {
+  const { email, otp } = c.req.valid("json");
+
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email));
+
+  if (!user) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  if (user.emailVerified) {
+    return c.json({ error: "Email already verified" }, 400);
+  }
+
+  if (!user.emailOtp || !user.emailOtpExpires) {
+    return c.json({ error: "No verification code found. Please register again." }, 400);
+  }
+
+  // Check expiry
+  if (new Date() > user.emailOtpExpires) {
+    return c.json({ error: "Verification code has expired. Please request a new one.", expired: true }, 400);
+  }
+
+  // Verify OTP
+  const valid = await bcrypt.compare(otp, user.emailOtp);
+  if (!valid) {
+    return c.json({ error: "Invalid verification code" }, 400);
+  }
+
+  // Mark as verified and clear OTP
+  await db
+    .update(users)
+    .set({
+      emailVerified: true,
+      emailOtp: null,
+      emailOtpExpires: null,
+    })
+    .where(eq(users.id, user.id));
+
+  // Generate auth token
+  user.emailVerified = true;
+  const token = await generateToken(user);
+
+  return c.json({
+    success: true,
+    message: "Email verified successfully",
     token,
     user: {
-      id: newUser.id,
-      username: newUser.username,
-      email: newUser.email,
-      name: fullName || newUser.username,
-      team_role: newUser.teamRole,
-      developer: newUser.developer,
-      is_admin: false,
-      is_superuser: false,
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username,
+      profile_picture: user.profilePicture,
+      team_role: user.teamRole,
     },
+  });
+});
+
+// ─── Resend OTP ───
+const resendSchema = z.object({
+  email: z.string().email(),
+});
+
+authRouter.post("/resend-otp", zValidator("json", resendSchema), async (c) => {
+  const { email } = c.req.valid("json");
+
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email));
+
+  if (!user) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  if (user.emailVerified) {
+    return c.json({ error: "Email already verified" }, 400);
+  }
+
+  // Generate new OTP
+  const otp = generateOtp();
+  const otpHash = await bcrypt.hash(otp, 10);
+  const expires = new Date(Date.now() + 10 * 60 * 1000);
+
+  await db
+    .update(users)
+    .set({ emailOtp: otpHash, emailOtpExpires: expires })
+    .where(eq(users.id, user.id));
+
+  // Send OTP email
+  sendOtpEmail(email, otp).catch((err) =>
+    console.error("Failed to send OTP:", err)
+  );
+
+  return c.json({
+    success: true,
+    message: "New verification code sent to your email",
   });
 });
 
@@ -138,6 +281,7 @@ authRouter.get("/me", authMiddleware, async (c) => {
       can_see_work_hours: user.canSeeWorkHours,
       bio: user.bio,
       notepad_content: user.notepadContent,
+      email_verified: user.emailVerified,
     },
   });
 });

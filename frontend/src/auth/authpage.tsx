@@ -115,6 +115,11 @@ export default function AuthPage() {
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
+  const [otpEmail, setOtpEmail] = useState("");
+  const [otpCode, setOtpCode] = useState(["", "", "", "", "", ""]);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [resending, setResending] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState("");
   const [updatingName, setUpdatingName] = useState(false);
@@ -3641,6 +3646,10 @@ export default function AuthPage() {
         if (isSignIn) {
           login(data.user, data.token);
           navigate("/planner");
+        } else if (data.needsVerification) {
+          setShowOtp(true);
+          setOtpEmail(data.email || formData.email);
+          setError(null);
         } else {
           setIsSignIn(true);
           setFormData({
@@ -3662,14 +3671,157 @@ export default function AuthPage() {
     }
   };
 
+  const handleOtpChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return;
+    const newOtp = [...otpCode];
+    newOtp[index] = value.slice(-1);
+    setOtpCode(newOtp);
+    if (value && index < 5) {
+      const next = document.getElementById(`otp-${index + 1}`);
+      next?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otpCode[index] && index > 0) {
+      const prev = document.getElementById(`otp-${index - 1}`);
+      prev?.focus();
+    }
+    if (e.key === "Enter") {
+      handleVerifyOtp();
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    const code = otpCode.join("");
+    if (code.length !== 6) {
+      setError("Please enter the full 6-digit code");
+      return;
+    }
+    setVerifyingOtp(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/verify-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: otpEmail, otp: code }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        login(data.user, data.token);
+        navigate("/planner");
+      } else {
+        setError(data.error || "Verification failed");
+        if (data.expired) setOtpCode(["", "", "", "", "", ""]);
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setVerifyingOtp(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setResending(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/resend-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: otpEmail }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setOtpCode(["", "", "", "", "", ""]);
+        setTimeout(() => setError(null), 3000);
+      } else {
+        setError(data.error || "Failed to resend code");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setResending(false);
+    }
+  };
 
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
       <div className="w-full max-w-md p-8 space-y-6 bg-[var(--calendar-date-bg)] rounded-lg shadow-md border">
-        <h2 className="text-3xl font-bold text-center">
-          {isSignIn ? "Sign In" : "Sign Up"}
-        </h2>
+        {showOtp ? (
+          <>
+            <h2 className="text-3xl font-bold text-center">Verify Email</h2>
+            <p className="text-center text-muted-foreground text-sm">
+              A 6-digit code was sent to <strong>{otpEmail}</strong>
+            </p>
+
+            {error && (
+              <div className={`p-3 rounded-md text-sm ${
+                error.includes("sent") || error.includes("New")
+                  ? "bg-green-100/50 border border-green-400/50 text-green-700"
+                  : "bg-red-100/50 border border-red-400/50 text-red-700"
+              }`}>
+                {error}
+              </div>
+            )}
+
+            <div className="flex justify-center gap-2">
+              {otpCode.map((digit, i) => (
+                <input
+                  key={i}
+                  id={`otp-${i}`}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleOtpChange(i, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                  className="w-12 h-14 text-center text-2xl font-bold border border-input rounded-md bg-background/50 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  autoFocus={i === 0}
+                  disabled={verifyingOtp}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={handleVerifyOtp}
+              disabled={verifyingOtp || otpCode.join("").length !== 6}
+              className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {verifyingOtp ? "Verifying..." : "Verify Email"}
+            </button>
+
+            <div className="text-center text-sm text-muted-foreground">
+              Didn't get the code?{" "}
+              <button
+                onClick={handleResendOtp}
+                disabled={resending}
+                className="text-primary hover:underline disabled:opacity-50"
+              >
+                {resending ? "Sending..." : "Resend code"}
+              </button>
+            </div>
+
+            <div className="text-center mt-2">
+              <button
+                onClick={() => {
+                  setShowOtp(false);
+                  setIsSignIn(true);
+                  setError(null);
+                }}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                ← Back to Sign In
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="text-3xl font-bold text-center">
+              {isSignIn ? "Sign In" : "Sign Up"}
+            </h2>
+          </>
+        )}
 
         {error && (
           <div className="p-3 bg-red-100/50 border border-red-400/50 text-red-700 rounded-md">
