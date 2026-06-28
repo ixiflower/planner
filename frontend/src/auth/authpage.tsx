@@ -3619,7 +3619,7 @@ export default function AuthPage() {
 
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground pb-32">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
       <div className="w-full max-w-md p-8 space-y-6 bg-[var(--calendar-date-bg)] rounded-lg shadow-md border">
         <h2 className="text-3xl font-bold text-center">
           {isSignIn ? "Sign In" : "Sign Up"}
@@ -3748,8 +3748,6 @@ export default function AuthPage() {
           </button>
         </div>
       </div>
-      <div className="h-16"></div>
-
     </div>
   );
 }
