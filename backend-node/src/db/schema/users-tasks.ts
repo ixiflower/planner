@@ -31,6 +31,19 @@ export const users = pgTable("users", {
   dateJoined: timestamp("date_joined").defaultNow(),
 });
 
+// ─── Calendar Events (Tasks) ───
+export const calendarEvents = pgTable("calendar_events", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  color: text("color").default("blue"),
+  isImportant: boolean("is_important").default(false),
+  category: text("category").default("general"),
+});
+
 // ─── Permanent Notes ───
 export const permanentNotes = pgTable("permanent_notes", {
   id: serial("id").primaryKey(),

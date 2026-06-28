@@ -1,41 +1,42 @@
 import "dotenv/config";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { logger } from "hono/logger";
 import { serve } from "@hono/node-server";
 import { authRouter } from "./routes/auth.js";
 import { oauthRouter } from "./routes/oauth.js";
 import { uploadRouter } from "./routes/upload.js";
-import { tasksRouter } from "./routes/tasks.js";
+import { calendarEventsRouter } from "./routes/calendar/events.js";
+import { notesRouter } from "./routes/calendar/notes.js";
+import { dailyGoalsRouter } from "./routes/calendar/daily-goals.js";
+import { eventTemplatesRouter } from "./routes/calendar/event-templates.js";
+import { exerciseRouter } from "./routes/calendar/exercise.js";
 import { usersRouter } from "./routes/users.js";
 
 const app = new Hono();
 
-// Middleware
-app.use("*", logger());
+// CORS
 app.use("*", cors({
-  origin: ["http://localhost:82", "http://localhost:5173"],
+  origin: ["http://localhost:82", "http://localhost:8002"],
   credentials: true,
+  allowHeaders: ["Content-Type", "Authorization"],
+  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 }));
 
-// Health check
+// Health
 app.get("/api/health", (c) => c.json({ status: "ok", service: "planner-neon" }));
 
 // Routes
 app.route("/api/auth", authRouter);
 app.route("/api/auth", oauthRouter);
 app.route("/api/auth", uploadRouter);
-app.route("/api/tasks", tasksRouter);
+app.route("/api/tasks", calendarEventsRouter);
+app.route("/api/notes", notesRouter);
+app.route("/api/daily-goals", dailyGoalsRouter);
+app.route("/api/event-templates", eventTemplatesRouter);
+app.route("/api/exercise", exerciseRouter);
 app.route("/api/users", usersRouter);
 
-// 404
-app.notFound((c) => c.json({ error: "Not found" }, 404));
-
+// Start
 const port = Number(process.env.PORT) || 8002;
-
-serve({
-  fetch: app.fetch,
-  port,
-}, (info) => {
-  console.log(`🚀 Planner API running on http://localhost:${port}`);
-});
+console.log(`🚀 Planner API running on http://localhost:${port}`);
+serve({ fetch: app.fetch, port });

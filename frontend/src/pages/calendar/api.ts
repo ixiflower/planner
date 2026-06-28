@@ -10,7 +10,7 @@ const getStoredAuthToken = (): string | null => {
     
     const fromLocal = localStorage.getItem('authToken');
     if (fromLocal) {
-      const token = fromLocal.startsWith('Token ') ? fromLocal : `Token ${fromLocal}`;
+      const token = fromLocal.startsWith('Bearer ') ? fromLocal : `Bearer ${fromLocal}`;
       console.debug('Using token from localStorage:', token);
       return token;
     }
@@ -18,7 +18,7 @@ const getStoredAuthToken = (): string | null => {
     const match = document.cookie.match(new RegExp('(^| )authToken=([^;]+)'));
     if (match) {
       const token = decodeURIComponent(match[2]);
-      const finalToken = token.startsWith('Token ') ? token : `Token ${token}`;
+      const finalToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
       console.debug('Using token from cookie:', finalToken);
       return finalToken;
     }
@@ -39,7 +39,7 @@ const buildHeaders = (token?: string, extra: Record<string, string> = {}): Recor
 
   const resolvedToken = token || getStoredAuthToken();
   if (resolvedToken) {
-    headers["Authorization"] = resolvedToken.startsWith('Token ') ? resolvedToken : `Token ${resolvedToken}`;
+    headers["Authorization"] = resolvedToken.startsWith('Bearer ') ? resolvedToken : `Bearer ${resolvedToken}`;
     console.debug('Authorization header set:', headers["Authorization"]);
   } else {
     console.warn('No authorization token available');
