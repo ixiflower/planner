@@ -3561,8 +3561,8 @@ export default function AuthPage() {
 
     try {
       const url = isSignIn
-        ? `${API_BASE_URL}/auth/login/`
-        : `${API_BASE_URL}/auth/register/`;
+        ? `${API_BASE_URL}/auth/login`
+        : `${API_BASE_URL}/auth/register`;
 
       const requestData = isSignIn
         ? { 

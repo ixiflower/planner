@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let storedToken = getCookie('authToken') || localStorage.getItem('authToken');
     const storedUser = getCookie('user') || localStorage.getItem('user');
     
-    const headerToken = storedToken && storedToken.startsWith('Token ') ? storedToken : storedToken ? `Token ${storedToken}` : null;
+    const headerToken = storedToken && storedToken.startsWith('Bearer ') ? storedToken : storedToken ? `Bearer ${storedToken}` : null;
     
     if (headerToken && storedUser) {
       try {
@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [isAuthenticated, token]);
 
   const login = (userData: User, authToken: string) => {
-    const token = authToken.startsWith('Token ') ? authToken : `Token ${authToken}`;
+    const token = authToken.startsWith('Bearer ') ? authToken : `Bearer ${authToken}`;
     console.debug('Setting auth token:', token);
     
     setUser(userData);
@@ -147,9 +147,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const refreshUser = async () => {
     try {
       const auth = token || getCookie('authToken') || localStorage.getItem('authToken');
-      const headerToken = auth && auth.startsWith('Token ') ? auth : auth ? `Token ${auth}` : '';
+      const headerToken = auth && auth.startsWith('Bearer ') ? auth : auth ? `Bearer ${auth}` : '';
       if (!headerToken) return;
-      const res = await fetch(`${BACKEND_URL}/api/auth/me/`, {
+      const res = await fetch(`${BACKEND_URL}/api/auth/me`, {
         method: 'GET',
         headers: {
           'Authorization': headerToken,

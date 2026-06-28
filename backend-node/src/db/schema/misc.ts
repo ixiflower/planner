@@ -1,5 +1,5 @@
 import { pgTable, serial, text, boolean, timestamp, integer, jsonb, varchar } from "drizzle-orm/pg-core";
-import { users } from "./users-tasks.js";
+import { users } from "./users-tasks";
 
 // ─── Structure Boards (Canvas) ───
 export const structureBoards = pgTable("structure_boards", {

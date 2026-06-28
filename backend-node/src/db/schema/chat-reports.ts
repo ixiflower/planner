@@ -1,5 +1,5 @@
 import { pgTable, serial, text, boolean, timestamp, integer, jsonb } from "drizzle-orm/pg-core";
-import { users } from "./users-tasks.js";
+import { users } from "./users-tasks";
 import { relations } from "drizzle-orm";
 
 // ─── Reports ───

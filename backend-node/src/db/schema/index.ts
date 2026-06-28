@@ -1,3 +1,3 @@
-export * from "./users-tasks.js";
-export * from "./chat-reports.js";
-export * from "./misc.js";
+export * from "./users-tasks";
+export * from "./chat-reports";
+export * from "./misc";

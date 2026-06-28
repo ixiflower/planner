@@ -12,7 +12,7 @@ export function getBackendUrl(): string {
 
 export const getApiBaseUrl = (): string => {
   const backendUrl = getBackendUrl();
-  return `${backendUrl}/tickets/api`;
+  return `${backendUrl}/api`;
 };
 
 export const BACKEND_URL = getBackendUrl();

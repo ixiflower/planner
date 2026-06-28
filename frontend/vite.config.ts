@@ -72,17 +72,14 @@ export default defineConfig(async ({ mode }) => {
         "/api/structure": {
           target: backendUrl,
           changeOrigin: true,
-          rewrite: (path: string) => path.replace(/^\/api\/structure/, "/api/structure"),
         },
         "/api/auth": {
           target: backendUrl,
           changeOrigin: true,
-          rewrite: (path: string) => path.replace(/^\/api\/auth/, "/api/auth"),
         },
         "/api": {
           target: backendUrl,
           changeOrigin: true,
-          rewrite: (path: string) => path.replace(/^\/api/, "/tickets/api"),
         },
         "/download": {
           target: backendUrl,
